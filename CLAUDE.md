@@ -13,6 +13,9 @@ arquivo só acrescenta o que é deste projeto. O `README.md` explica o uso.
   em si fica aberta) e, por juízo meu, o histórico de perguntas à IA (diz o que ele fez; a coleção
   está em `TRANCADAS` do `servidor/armazem.py`, tirar de lá destranca). O app NÃO entra no
   `cadeado/privados.json`.
+- **App de Electron no PC** (correção dele em 17/10/2026: "era para ser um app de electron aqui no
+  pc"): a janela é o Electron (`electron/main.cjs`), com o atalho do Menu Iniciar apontando para o
+  `electron.exe`. Antes (1.0.x) abria numa aba do Brave. Fechar a janela para o servidor que o app subiu.
 - **Versão no servidor de casa para o celular** (porta 8076, serviço `oratorio` do systemd do
   usuário `elipe`). Celular entra neste projeto por pedido dele.
 - **A IA usa o Catecismo como base principal e a Bíblia como secundária**: o servidor busca os §
@@ -37,15 +40,28 @@ arquivo só acrescenta o que é deste projeto. O `README.md` explica o uso.
   `demo` (8075, dados em %TEMP%\oratorio-demo, IA de mentira, sem cadeado; é o preview).
 - **Página** (`app/`, módulos ES sem build): `main.js` (rotas por hash e a ALTERNÂNCIA DOS BLOCOS:
   a primeira seção é escura e elas se alternam, o rodapé fica com o tom oposto ao da última; nenhuma
-  vista escolhe fundo à mão), `contexto.js` (estado, cor do dia, cadeado, gaveta das citações,
-  sincronia com a nova aba e com o Vigia), `liturgia.js` (o calendário), `plano.js` (o plano e a
+  vista escolhe fundo à mão), `contexto.js` (estado, cor do dia, cadeado, gaveta das citações),
+  `liturgia.js` (o calendário), `plano.js` (o plano e a
   conversão de numeração), `vistas/*.js` (uma por tela), `conteudo/*.js` (orações, terço, guias,
   modelos; texto escrito à mão).
-- **Ponte com a nova aba** (`app/js/ponte.js` aqui, `oratorio.js` e `js/oratorio/ponte.js` lá): só
-  na origem `localhost:8074` e `192.168.1.214:8076`, e só cinco pedidos: ler o contador do Vigia,
-  recair, vontade vencida, ler e gravar os capítulos lidos. **Ligar, desligar e liberar site do
-  Vigia nunca passam por ela** (seção 0 do `brave-nova-aba/CLAUDE.md`). No celular não há
-  extensão: a recaída vira `vigia/pendente:*` e o PC entrega ao Vigia quando abre o Oratório.
+- **Electron** (`electron/main.cjs`): sobe `servidor/iniciar.py --sem-janela` (que cuida da atualização
+  pelo GitHub) se a porta não responde, espera, abre a janela em `http://127.0.0.1:8074`, bloqueia
+  navegação para fora (links externos vão para o navegador padrão), nega permissões, lembra o tamanho
+  da janela, tem F5, zoom e F11, e ao fechar derruba a árvore do servidor que subiu. Servidor que já
+  estava no ar é aproveitado e deixado como estava. Electron 44.5.0 fixo (o mesmo do `chat-ia` e do
+  `central`); o binário vem de `node node_modules\electron\install.js` quando o `npm install` pula o
+  postinstall (o `abrir.bat` faz as duas coisas).
+- **Ponte com a nova aba, em segundo plano** (nova aba 1.5.0, `js/oratorio/ponte.js` lá): no Electron
+  não há extensão e página nenhuma conversa com ela; é a extensão que vai até o servidor, de 30 em 30
+  segundos (alarme) e 2,5 s depois de qualquer mudança no Vigia ou no plano, **enquanto o Brave e o
+  Oratório estiverem abertos**. As rotas são `GET /api/ponte/estado` e `POST /api/ponte/aplicar`, só
+  no modo PC e só com `Origin: chrome-extension://cidbkemhlibfkhcikiaiiiadoomaginl` (o ID fixo da
+  extensão; página nenhuma forja `Origin`). A extensão entrega os `vigia/pendente:*` (Recaí e Tô com
+  vontade, do PC ou do celular), devolve só o retrato do contador, e junta os capítulos lidos (a
+  conversão de numeração é o `plano.js` daqui, copiado byte a byte para a extensão por
+  `ferramentas\sincronizar_nova_aba.py`; o teste de lá confere). **Ligar, desligar e liberar site do
+  Vigia nunca passam por ela** (seção 0 do `brave-nova-aba/CLAUDE.md`; o teste lá prova). O cadeado
+  vale para quem lê pela página: a extensão escreve o retrato direto no armazém, sem destravar.
 - **Colinha e árvore** são cópias em `app/vendor/` (`ferramentas\sincronizar_vendor.py`; `--conferir`
   diz se estão velhas, e o `publicar-versao.ps1` recusa publicar com elas velhas). A colinha recebe
   o armazém de fora (`globalThis.colinhaArmazem`, mudança de uma linha no `main.js` dela) e o
@@ -82,12 +98,14 @@ Conferido em 1440×900, 3440×1440 (o miolo cresce a 136rem), 1080×1920 e 375×
 
 ## 5. Rodar e testar
 
-- PC: atalho **Oratório** do Menu Iniciar (`ferramentas\criar-atalho.ps1`: `pythonw servidor\iniciar.py`, sem console; ícone em `app\icone.ico`, de `ferramentas\gerar_icone.py`; o `.ps1` sai do `ferramentas\_escrever_atalho.py`) ou `abrir.bat` (→ :8074, abre no Brave). Preview: entrada `oratorio-demo` do `launch.json` (:8075).
+- PC: atalho **Oratório** do Menu Iniciar (`ferramentas\criar-atalho.ps1`: `electron.exe "."`, sem console; ícone em `app\icone.ico`, de `ferramentas\gerar_icone.py`; o `.ps1` sai do `ferramentas\_escrever_atalho.py`) ou `abrir.bat` (instala o Electron na primeira vez e abre a janela; :8074). Preview: entrada `oratorio-demo` do `launch.json` (:8075).
+- `node testes\testar-electron.cjs`: abre o Electron de verdade (uma janela por uns segundos) em porta e dados temporários e confere janela, servidor, links de fora e o encerramento.
 - `node --test "testes/*.test.js"` (calendário, plano, conteúdo conferido, dicas).
 - `cd servidor; python -m unittest discover -s testes -t .` (armazém e sincronia, rotas, cadeado por
   senha, token, a IA contra um servidor FALSO no formato das duas APIs; nunca a API de verdade).
-- Na `brave-nova-aba`: `testar-oratorio.js` e `testar-oratorio-navegador.js` (Brave descartável,
-  porta 8074 livre; para se o Oratório de verdade estiver aberto).
+- Na `brave-nova-aba`: `testar-oratorio.js` (a sincronização contra um servidor falso, 26 testes) e
+  `testar-oratorio-navegador.js` (Brave descartável com o Oratório em demonstração na 8074; leva ~1 min
+  e para se a 8074 estiver ocupada).
 - Servidor de casa: `implantar\enviar.ps1`, `configurar-sincronia.ps1`, `configurar-chaves.ps1`,
   `ver-registro.ps1`. Os `.ps1` saem do `implantar\_escrever_ps1.py` e o `publicar-versao.ps1` do
   `ferramentas\_escrever_publicar.py` (UTF-8 com BOM: mexa no gerador, não no `.ps1`).
@@ -106,6 +124,14 @@ Conferido em 1440×900, 3440×1440 (o miolo cresce a 136rem), 1080×1920 e 375×
 - O Catecismo do vatican.va não traz os § 2217 e 2439 separados (colados aos vizinhos no próprio site).
 - O ruído "conexão anulada" do Windows quando o navegador fecha antes da resposta é ignorado em
   `Servidor.handle_error`.
+- **Servidor velho na 8074 vira app velho**: o Electron aproveita o servidor que já responde. Se sobrou
+  um da versão antiga (o atalho de antes deixava um `pythonw` no ar), a janela abre com o código antigo.
+  Parar o processo que segura a 8074 resolve (aconteceu em 17/10/2026).
+- Teste que dispara sincronização da extensão tem corrida na partida: a extensão já sincroniza ao
+  abrir, com o estado de fábrica dela. O teste de navegador espera isso assentar antes de pôr os
+  registros no servidor.
+- Heredoc e `printf` do bash comem `\` e `\f` (já virou quebra de página no README): arquivo com caminho do
+  Windows se escreve com o Write ou o Edit.
 
 ## 7. O que não foi verificado
 
@@ -115,5 +141,8 @@ Conferido em 1440×900, 3440×1440 (o miolo cresce a 136rem), 1080×1920 e 375×
   Catecismo respondem e a parte trancada devolve 423. A sincronia foi testada só lendo (numa pasta
   temporária, 0 itens). **Não verificado:** o celular de verdade e destravar lá com a senha.
 - **Falta ele rodar no PC:** `implantar\configurar-sincronia.ps1` (grava o token no `.env`, que é
-  protegido para agentes) e `implantar\configurar-chaves.ps1` (as chaves de IA, ele cola).
+  protegido para agentes) e `implantar\configurar-chaves.ps1` (as chaves de IA, ele cola). E
+  recarregar a nova aba (1.5.0) em `brave://extensions`: sem isso o Vigia e o plano não sincronizam.
+- **Electron:** testado de verdade (`testar-electron.cjs`), mas o atalho do Menu Iniciar só foi
+  conferido pelo destino, não clicado.
 - A atualização pela release (nenhuma release publicada ainda).

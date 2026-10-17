@@ -122,6 +122,58 @@ class TestDemo(Base):
         s, d, _ = self.pedir("POST", "/api/ia/revisar", {"titulo": "x", "texto": "Senhor, obrigado por hoje. Amém"})
         self.assertEqual(s, 200)
 
+    # ── a extensão da nova aba, em segundo plano ──────────────────────
+
+    EXT = {"Origin": "chrome-extension://cidbkemhlibfkhcikiaiiiadoomaginl"}
+
+    def test_ponte_estado_lista_lidos_e_pendentes(self):
+        self.pedir("PUT", "/api/dados/lidos/GEN.1", {"valor": {"l": 1}})
+        self.pedir("PUT", "/api/dados/vigia/pendente:t1", {"valor": {"tipo": "recair", "em": 1000, "aplicado": False}})
+        self.pedir("PUT", "/api/dados/vigia/pendente:t2", {"valor": {"tipo": "vontade", "em": 2000, "aplicado": 5}})
+        s, d, _ = self.pedir("GET", "/api/ponte/estado")
+        self.assertEqual(s, 200)
+        self.assertIn("GEN.1", d["lidos"])
+        self.assertEqual([p["k"] for p in d["pendentes"]], ["pendente:t1"])     # o já aplicado não volta
+        self.assertTrue(d["visto"] is None or isinstance(d["visto"], list))   # o que a extensão já tinha visto (ou nada, na primeira vez)
+
+    def test_ponte_aplicar_grava_marca_e_retrato(self):
+        self.pedir("PUT", "/api/dados/vigia/pendente:t3", {"valor": {"tipo": "recair", "em": 1000, "aplicado": False}})
+        corpo = {"marcar": ["LUK.1", "PSA.22"], "desmarcar": ["GEN.1"], "visto": ["LUK.1", "PSA.23"],
+                 "retrato": {"inicio": 111, "recorde": 222, "vencidas": 3, "tentativasHoje": 1, "lidoEm": 333,
+                             "recaidas": [{"em": 5, "durou": 6}], "ligado": False, "excecoes": ["x"]},
+                 "aplicados": ["pendente:t3", "lidos:GEN.1", "pendente:inexistente"]}
+        s, _, _ = self.pedir("POST", "/api/ponte/aplicar", corpo, self.EXT)
+        self.assertEqual(s, 200)
+        a = self.app.armazem
+        self.assertEqual(a.ler("lidos", "LUK.1"), {"l": 1})
+        self.assertIsNone(a.ler("lidos", "GEN.1"))
+        retrato = a.ler("vigia", "retrato")
+        self.assertEqual((retrato["inicio"], retrato["vencidas"], retrato["origem"]), (111, 3, "nova-aba"))
+        self.assertNotIn("ligado", retrato)            # só o contador entra, nada da proteção
+        self.assertNotIn("excecoes", retrato)
+        self.assertTrue(a.ler("vigia", "pendente:t3")["aplicado"])
+        self.assertIsNone(a.ler("vigia", "lidos:GEN.1"))   # só "pendente:*" é marcado como aplicado
+        self.assertEqual(a.ler("config", "novaAbaVisto")["refs"], ["LUK.1", "PSA.23"])
+        s, d, _ = self.pedir("GET", "/api/estado")
+        self.assertGreater(d["ponte"]["quando"], 0)
+        self.assertEqual(d["ponte"]["trouxe"], 2)
+
+    def test_ponte_so_aceita_a_origem_da_extensao(self):
+        corpo = {"marcar": [], "desmarcar": [], "visto": []}
+        for origem in ("http://evil.test", "chrome-extension://outraextensaoqualquer", "http://127.0.0.1:1"):
+            s, _, _ = self.pedir("POST", "/api/ponte/aplicar", corpo, {"Origin": origem})
+            self.assertEqual(s, 403, origem)
+        s, _, _ = self.pedir("POST", "/api/ponte/aplicar", corpo, self.EXT)
+        self.assertEqual(s, 200)
+        # a origem da extensão não vale em nenhuma outra rota que muda coisa
+        s, _, _ = self.pedir("PUT", "/api/dados/config/x", {"valor": 1}, self.EXT)
+        self.assertEqual(s, 403)
+
+    def test_ponte_recusa_capitulo_invalido(self):
+        for ruim in (["../x"], ["GEN.1; drop"], [1], ["gen.1"], ["GEN.1000"]):
+            s, _, _ = self.pedir("POST", "/api/ponte/aplicar", {"marcar": ruim, "desmarcar": [], "visto": []}, self.EXT)
+            self.assertEqual(s, 400, ruim)
+
     def test_sincronia_recusada_fora_do_servidor(self):
         s, _, _ = self.pedir("POST", "/api/sincronia", {"itens": []}, {"Authorization": "Bearer x"})
         self.assertEqual(s, 404)
@@ -171,6 +223,13 @@ class TestServidorDeCasa(Base):
         s, d, _ = self.pedir("POST", "/api/sincronia", {"itens": itens, "desde": 0}, {"Authorization": "Bearer token-de-teste"})
         self.assertEqual(s, 200)
         self.assertTrue(any(i["id"] == "MAT.1" for i in d["itens"]))
+
+    def test_servidor_de_casa_nao_conversa_com_a_extensao(self):
+        s, _, _ = self.pedir("GET", "/api/ponte/estado")
+        self.assertEqual(s, 404)
+        s, _, _ = self.pedir("POST", "/api/ponte/aplicar", {"marcar": [], "desmarcar": [], "visto": []},
+                             {"Origin": "chrome-extension://cidbkemhlibfkhcikiaiiiadoomaginl"})
+        self.assertEqual(s, 403)
 
     def test_servidor_nao_se_atualiza_sozinho(self):
         s, _, _ = self.pedir("POST", "/api/atualizacao/aplicar", {})

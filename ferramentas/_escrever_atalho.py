@@ -2,8 +2,8 @@
 from pathlib import Path
 
 TEXTO = r'''# Cria (ou refaz) o atalho "Oratório" no Menu Iniciar, com o ícone do app.
-# O atalho sobe o servidor sem janela nenhuma (pythonw) e abre o Oratório no Brave; se ele já estiver
-# aberto, só abre o navegador. Para parar o servidor: o botão "parar" do widget Projetos da nova aba.
+# O atalho abre o Electron direto (sem janela de console): o app sobe o servidor do Oratório sozinho e para ele
+# quando a janela fecha. Se o Electron ainda não foi baixado, rode o abrir.bat uma vez (ele instala).
 # Rodar de novo se a pasta do projeto mudar de lugar. Com -Remover, tira o atalho.
 # Uso: powershell -ExecutionPolicy Bypass -File "<pasta do projeto>\ferramentas\criar-atalho.ps1" [-AreaDeTrabalho] [-Remover]
 
@@ -18,19 +18,16 @@ if ($Remover) {
     exit 0
 }
 
-# pythonw ao lado do python que está no PATH (o python.exe abriria uma janela de console)
-$python = (Get-Command python.exe -ErrorAction SilentlyContinue | Select-Object -First 1).Source
-if (-not $python) { throw 'Não achei o python no PATH.' }
-$pythonw = Join-Path (Split-Path $python) 'pythonw.exe'
-if (-not (Test-Path $pythonw)) { throw "Não achei o pythonw.exe ao lado de $python." }
+$electron = Join-Path $raiz 'node_modules\electron\dist\electron.exe'
+if (-not (Test-Path $electron)) { throw "Falta o Electron ($electron). Rode o abrir.bat uma vez: ele instala." }
 $icone = Join-Path $raiz 'app\icone.ico'
 if (-not (Test-Path $icone)) { throw "Falta $icone (python ferramentas\gerar_icone.py)." }
 
 $shell = New-Object -ComObject WScript.Shell
 foreach ($d in $destinos) {
     $lnk = $shell.CreateShortcut($d)
-    $lnk.TargetPath = $pythonw
-    $lnk.Arguments = '"' + (Join-Path $raiz 'servidor\iniciar.py') + '"'
+    $lnk.TargetPath = $electron
+    $lnk.Arguments = '"."'
     $lnk.WorkingDirectory = $raiz
     $lnk.IconLocation = "$icone,0"
     $lnk.Description = 'Oratório: Bíblia, orações, terço, calendário litúrgico e guias'

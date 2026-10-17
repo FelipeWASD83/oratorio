@@ -2,8 +2,7 @@
 
 import { h, plural, dataHora } from '../util.js';
 import { api } from '../api.js';
-import { ctx, recarregarEstado, pedirSenha, toast, quandoFoi, sincronizarNovaAba } from '../contexto.js';
-import * as ponte from '../ponte.js';
+import { ctx, recarregarEstado, pedirSenha, toast, ultimaSincroniaDaExtensao, haQuanto } from '../contexto.js';
 import { reRender, redesenharCasca } from '../main.js';
 
 const MODELOS = [
@@ -20,7 +19,7 @@ const ESFORCOS = [['low', 'Pouco'], ['medium', 'Médio (padrão)'], ['high', 'Mu
 export async function render() {
   const e = await recarregarEstado();
   const ia = e.ia;
-  const extensao = await ponte.extensao();
+  const ultimaPonte = ultimaSincroniaDaExtensao();
   let atualizacao = null;
   if (e.modo !== 'servidor') atualizacao = await api.get('/api/atualizacao').catch((erro) => ({ erro: erro.message }));
 
@@ -71,11 +70,10 @@ export async function render() {
           : h('p', { class: 'texto-fraco' }, 'Desligada. Para usar no celular, o Oratório roda no servidor de casa (implantar\\enviar.ps1) e este PC sincroniza com ele (ORATORIO_SINCRONIA_URL e ORATORIO_SINCRONIA_TOKEN no .env; o configurar-sincronia.ps1 escreve os dois).')),
     h('div', { class: 'cartao' },
       h('p', { class: 'rotulo rotulo--lit' }, 'Nova aba do Brave'),
-      extensao ? [
-        h('p', null, `Extensão ${extensao} encontrada: os dias limpo vêm do Vigia e o plano é o mesmo do balão Bíblia.`),
-        h('p', { class: 'texto-fraco', style: 'font-size:.88rem' }, `Última junção do plano: ${quandoFoi(ctx.sincroniaNovaAba.quando)}.`),
-        h('div', { class: 'cartao__pe' }, h('button', { class: 'botao botao--pequeno', type: 'button', onclick: async () => { const r = await sincronizarNovaAba(); toast(r.ok ? 'Plano juntado.' : r.motivo); reRender(); } }, 'Juntar o plano agora'))]
-        : h('p', { class: 'texto-fraco' }, 'Não encontrada neste navegador. Ela precisa ser a 1.4.0 ou mais nova, no Brave, com o Oratório aberto em localhost:8074 (ou no servidor de casa, 192.168.1.214:8076). No celular ela não existe, e está tudo bem.')),
+      ultimaPonte
+        ? [h('p', null, `A extensão sincronizou ${haQuanto(ultimaPonte)}: os dias limpo vêm do Vigia e o plano é o mesmo do balão Bíblia.`),
+          h('p', { class: 'texto-fraco', style: 'font-size:.88rem' }, 'Ela faz isso sozinha de 30 em 30 segundos, com o Brave aberto e o Oratório no ar. Aqui nada precisa ser feito.')]
+        : h('p', { class: 'texto-fraco' }, e.modo === 'servidor' ? 'No servidor de casa não há extensão: quem fala com o Brave é o Oratório do PC.' : 'A extensão ainda não sincronizou. Ela precisa ser a 1.5.0 ou mais nova, com o Brave aberto (recarregue em brave://extensions). No celular não existe, e está tudo bem.')),
     h('div', { class: 'cartao' },
       h('p', { class: 'rotulo rotulo--lit' }, 'Atualização'),
       e.modo === 'servidor' ? h('p', { class: 'texto-fraco' }, 'O servidor de casa se atualiza pelo PC: implantar\\enviar.ps1.')

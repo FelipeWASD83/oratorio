@@ -2,6 +2,17 @@
 
 A versão mais nova fica em cima. Ela mora aqui, no `versao.json` e no `package.json`.
 
+## 2.0.0 (17/10/2026)
+
+Recarregue a nova aba do Brave (1.5.0) em `brave://extensions` e abra o Oratório de novo pelo atalho do Menu Iniciar.
+
+### Mudou
+- **Virou um app de janela (Electron)**, como você pediu: o atalho do Menu Iniciar abre a janela do app, que sobe o servidor sozinho e o para quando a janela fecha. Não abre mais numa aba do Brave.
+- **O Vigia e o plano da Bíblia sincronizam em segundo plano**: a extensão da nova aba vai até o Oratório de 30 em 30 segundos (com o Brave aberto), em vez de depender de uma página aberta no Brave. "Recaí" e "Tô com vontade" registrados aqui, no PC ou no celular, chegam ao Vigia nessa sincronia.
+
+### Novo
+- Atalho de janela com ícone próprio, tamanho da janela lembrado, F5, zoom (Ctrl + e Ctrl -) e F11; links de fora abrem no navegador padrão.
+
 ## 1.0.1 (17/10/2026)
 
 ### Novo

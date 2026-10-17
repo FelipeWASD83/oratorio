@@ -5,7 +5,8 @@
 // com o tom contrário ao da última. Assim nenhuma vista repete fundo sem querer.
 
 import { h, $, $$ } from './util.js';
-import { ctx, carregar, fecharGaveta, sincronizarNovaAba, sincronizarVigia, recarregarEstado, atualizarDia } from './contexto.js';
+import { dados } from './api.js';
+import { ctx, carregar, fecharGaveta, recarregarEstado, atualizarDia } from './contexto.js';
 
 const VISTAS = {
   hoje: () => import('./vistas/hoje.js'),
@@ -114,9 +115,21 @@ async function iniciar() {
   $('#fundoGaveta').addEventListener('click', fecharGaveta);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharGaveta(); });
   await render();
-  // Depois da primeira tela: juntar com a nova aba e com o Vigia (só no Brave com a extensão).
-  sincronizarNovaAba().then((r) => { if (r.ok && (r.trouxe || r.tirou) && ['plano', 'hoje', 'biblia'].includes(lerRota().nome)) render(); });
-  sincronizarVigia().catch(() => {});
+  // A extensão da nova aba mexe nos dados em segundo plano (Vigia e plano): de minuto em minuto, se a vista
+  // for uma das que mostram isso, redesenha sem voltar ao topo, mas só quando a extensão sincronizou de novo.
+  let ultimaPonte = (ctx.estado.ponte && ctx.estado.ponte.quando) || 0;
+  setInterval(async () => {
+    if (document.hidden || !['hoje', 'plano', 'limpo'].includes(lerRota().nome)) return;
+    try {
+      const e = await recarregarEstado();
+      const q = (e.ponte && e.ponte.quando) || 0;
+      if (q > ultimaPonte) {
+        ultimaPonte = q;
+        dados.esquecer();
+        render({ manter: true });
+      }
+    } catch { /* servidor fora: a próxima volta tenta */ }
+  }, 20000);
   // Virou o dia com a página aberta: recalcula a cor e o dia litúrgico.
   let diaAtual = ctx.hojeLit.n;
   setInterval(() => {

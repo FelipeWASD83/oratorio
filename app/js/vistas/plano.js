@@ -2,10 +2,9 @@
 
 import { h, plural, dataCurta } from '../util.js';
 import { dados } from '../api.js';
-import { ctx, lidos, marcarLidos, nomeDoCapitulo, sincronizarNovaAba, quandoFoi, toast } from '../contexto.js';
+import { ctx, lidos, marcarLidos, nomeDoCapitulo, ultimaSincroniaDaExtensao, haQuanto } from '../contexto.js';
 import { ETAPAS, TRILHAS_DIARIAS, RITMOS } from '../plano.js';
 import { partes } from '../liturgia.js';
-import * as ponte from '../ponte.js';
 import { reRender } from '../main.js';
 
 const abertos = new Set();
@@ -21,7 +20,7 @@ export async function render() {
   const hj = partes(ctx.hojeLit.n);
   const dia = `${hj.ano}-${String(hj.mes).padStart(2, '0')}-${String(hj.dia).padStart(2, '0')}`;
   const leitura = p.leituraDeHoje(conjunto, ritmo, config.hoje, dia);
-  const extensao = await ponte.extensao();
+  const ultima = ultimaSincroniaDaExtensao();
 
   const cabeca = h('section', { class: 'cabeca' }, h('div', { class: 'miolo' },
     h('p', { class: 'rotulo' }, 'A Palavra · plano de leitura'),
@@ -68,10 +67,9 @@ export async function render() {
     h('p', { class: 'rotulo' }, 'Junto com a nova aba'),
     h('h2', { class: 'titulo-secao' }, 'O balão Bíblia da nova aba ', h('em', null, 'e este plano são o mesmo')),
     h('p', null, 'O que você marca aqui aparece marcado lá, e o contrário também (inclusive desmarcar). Os sete livros católicos ficam só aqui, porque a nova aba conta os 66 das Bíblias protestantes; os Salmos, Joel e Malaquias são convertidos de uma numeração para a outra.'),
-    extensao
-      ? h('p', null, `Nova aba ${extensao} encontrada. Última junção: ${quandoFoi(ctx.sincroniaNovaAba.quando)}${ctx.sincroniaNovaAba.erro ? ` (erro: ${ctx.sincroniaNovaAba.erro})` : ''}. `,
-        h('button', { class: 'botao-texto', type: 'button', onclick: async () => { const r = await sincronizarNovaAba(); toast(r.ok ? `Juntado: ${r.trouxe} trazidos, ${r.tirou} tirados.` : `Não deu: ${r.motivo}`); reRender(); } }, 'Juntar agora'))
-      : h('p', { class: 'texto-fraco' }, 'A extensão da nova aba não está neste navegador (no celular ela não existe). A junção acontece quando o Oratório é aberto no Brave do PC; daqui, o que você marcar vai pelo servidor de casa.')));
+    ultima
+      ? h('p', null, `A extensão do Brave sincronizou ${haQuanto(ultima)}. Ela faz isso sozinha de 30 em 30 segundos, enquanto o Oratório e o Brave estiverem abertos.`)
+      : h('p', { class: 'texto-fraco' }, 'A extensão da nova aba ainda não sincronizou. Ela precisa da versão 1.5.0 ou mais nova, com o Brave aberto: recarregue-a em brave://extensions. Enquanto isso, o plano vale só aqui.')));
 
   return { titulo: 'Plano de leitura', secoes: [cabeca, etapas, diarias, novaAba] };
 }

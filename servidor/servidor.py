@@ -35,6 +35,9 @@ import sincronia as sincronia_mod  # noqa: E402
 import textos  # noqa: E402
 
 MAX_CORPO = 1_000_000
+# A extensão da nova aba (ID fixo pela "key" do manifesto dela) é a única origem de fora que pode falar com /api/ponte/.
+EXTENSAO_ORIGEM = "chrome-extension://cidbkemhlibfkhcikiaiiiadoomaginl"
+REF_CAPITULO = re.compile(r"^[1-3]?[A-Z]{2,3}\.\d{1,3}$")
 mimetypes.add_type("text/javascript", ".js")
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("font/woff2", ".woff2")
@@ -61,6 +64,15 @@ class App:
         self.sincronia = sincronia_mod.Sincronia(config, self.armazem)
         self.codigo_de_saida = 0
         self.servidor: ThreadingHTTPServer | None = None
+
+    def ponte_estado(self) -> dict:
+        """A última vez que a extensão da nova aba sincronizou (o Vigia e o plano da Bíblia)."""
+        try:
+            quando = int(self.armazem.meta("ponte:quando", "0") or 0)
+            resumo = json.loads(self.armazem.meta("ponte:resumo", "{}") or "{}")
+        except ValueError:
+            quando, resumo = 0, {}
+        return {"quando": quando, **resumo}
 
 
 ROTAS: list[tuple[str, re.Pattern, str]] = []
@@ -148,6 +160,8 @@ class Pedido(BaseHTTPRequestHandler):
         if self.command in ("POST", "PUT", "DELETE"):
             origem = self.headers.get("Origin")
             if origem and urllib.parse.urlparse(origem).netloc.lower() != host:
+                if self.path.startswith("/api/ponte/"):
+                    return origem.lower() == EXTENSAO_ORIGEM and self.app.config.modo != "servidor"
                 return self.path.startswith("/api/sincronia")   # a sincronia vem de outro aparelho, com token
         return True
 
@@ -213,7 +227,7 @@ class Pedido(BaseHTTPRequestHandler):
         self._json({
             "versao": config_mod.VERSAO, "modo": a.config.modo,
             "portao": a.portao.estado(self._cookie()),
-            "ia": a.ia.estado(), "sincronia": a.sincronia.estado(),
+            "ia": a.ia.estado(), "sincronia": a.sincronia.estado(), "ponte": a.ponte_estado(),
             "biblias": a.biblias.disponiveis(), "catecismo": a.catecismo.disponivel(),
             "repositorio": config_mod.info_versao().get("repositorio", ""),
         })
@@ -386,6 +400,61 @@ class Pedido(BaseHTTPRequestHandler):
         if not self.app.sincronia.ligada:
             raise Erro(400, "A sincronia não está configurada neste aparelho.")
         self._json(self.app.sincronia.rodar())
+
+    # ── a extensão da nova aba (Vigia e plano da Bíblia), em segundo plano ──
+
+    def _so_no_pc(self) -> None:
+        if self.app.config.modo == "servidor":
+            raise Erro(404, "Este aparelho não conversa com a extensão.")
+
+    @rota("GET", "/api/ponte/estado")
+    def ponte_estado(self):
+        """O que a extensão precisa saber: capítulos lidos, o que ela já tinha visto e o que está esperando para ir ao Vigia."""
+        self._so_no_pc()
+        a = self.app.armazem
+        pendentes = [{"k": k, "tipo": v.get("tipo"), "em": v.get("em")} for k, v in a.valores("vigia").items()
+                     if k.startswith("pendente:") and isinstance(v, dict) and not v.get("aplicado")]
+        visto = a.ler("config", "novaAbaVisto")
+        self._json({"lidos": sorted(a.valores("lidos")), "visto": visto.get("refs") if isinstance(visto, dict) else None,
+                    "pendentes": pendentes})
+
+    @rota("POST", "/api/ponte/aplicar")
+    def ponte_aplicar(self):
+        """A extensão devolve o que juntou: capítulos a marcar e desmarcar, o retrato do Vigia e o que já entregou ao Vigia.
+        Grava direto no armazém: o cadeado vale para quem lê pela página, não para a extensão, que só escreve o retrato."""
+        self._so_no_pc()
+        corpo = self._corpo()
+        a = self.app.armazem
+
+        def refs(nome: str) -> list[str]:
+            lista = corpo.get(nome)
+            if not isinstance(lista, list) or len(lista) > 2000:
+                raise Erro(400, f"{nome} inválido.")
+            if any(not isinstance(r, str) or not REF_CAPITULO.match(r) for r in lista):
+                raise Erro(400, f"{nome} tem capítulo inválido.")
+            return lista
+
+        marcar, desmarcar, visto = refs("marcar"), refs("desmarcar"), refs("visto")
+        for r in marcar:
+            a.gravar("lidos", r, {"l": 1})
+        for r in desmarcar:
+            a.apagar("lidos", r)
+        a.gravar("config", "novaAbaVisto", {"refs": visto, "quando": int(time.time() * 1000)})
+        retrato = corpo.get("retrato")
+        if isinstance(retrato, dict):
+            limpo = {k: int(retrato.get(k) or 0) for k in ("inicio", "recorde", "vencidas", "tentativasHoje", "lidoEm")}
+            limpo["recaidas"] = [{"em": int(x.get("em") or 0), "durou": int(x.get("durou") or 0)}
+                                 for x in (retrato.get("recaidas") or [])[-30:] if isinstance(x, dict)]
+            limpo["origem"] = "nova-aba"
+            a.gravar("vigia", "retrato", limpo)
+        for k in (corpo.get("aplicados") or [])[:200]:
+            atual = a.ler("vigia", str(k))
+            if str(k).startswith("pendente:") and isinstance(atual, dict):
+                a.gravar("vigia", str(k), {**atual, "aplicado": int(time.time() * 1000)})
+        a.definir_meta("ponte:quando", str(int(time.time() * 1000)))
+        a.definir_meta("ponte:resumo", json.dumps({"trouxe": len(marcar), "tirou": len(desmarcar), "entregues": len(corpo.get("aplicados") or [])}))
+        self.app.sincronia.avisar()
+        self._json({"ok": True})
 
     # ── atualização ────────────────────────────────────────────
 

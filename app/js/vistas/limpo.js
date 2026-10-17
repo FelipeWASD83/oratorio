@@ -4,9 +4,8 @@
 // retrato que o PC mandou e guarda a recaída como pendente, que o PC entrega ao Vigia.
 
 import { h, id, dataCurta, dataHora, plural } from '../util.js';
-import { trancado, avisoTrancado, textoDaRef, refLegivel, toast, sincronizarVigia } from '../contexto.js';
+import { trancado, avisoTrancado, textoDaRef, refLegivel, toast, haQuanto } from '../contexto.js';
 import { dados } from '../api.js';
-import * as ponte from '../ponte.js';
 import { ORACOES } from '../conteudo/oracoes.js';
 import { MODELOS } from '../conteudo/modelos.js';
 import { reRender } from '../main.js';
@@ -24,24 +23,21 @@ export function proximaMeta(dias) {
 }
 
 async function retrato() {
-  if (await ponte.extensao()) {
-    try { return await sincronizarVigia(); } catch { /* cai no guardado */ }
-  }
   const itens = await dados.listar('vigia', { recarregar: true });
   return itens.retrato || null;
 }
 
+/**
+ * Registra "Recaí" ou "Tô com vontade": fica na fila (`vigia/pendente:*`) e a extensão da nova aba entrega ao
+ * Vigia em até 30 segundos, se o Brave estiver aberto. O retrato daqui já muda na hora, para a tela não
+ * ficar parada esperando; quando a extensão sincroniza, ele é refeito com o número de verdade do Vigia.
+ */
 async function registrar(tipo) {
   const agora = Date.now();
-  if (await ponte.extensao()) {
-    if (tipo === 'recair') await ponte.vigia.recair(agora); else await ponte.vigia.vontadeVencida(agora);
-    await sincronizarVigia();
-    return;
-  }
   await dados.gravar('vigia', 'pendente:' + id(), { tipo, em: agora, aplicado: false });
   const atual = (await dados.listar('vigia')).retrato;
   if (atual) {
-    const novo = { ...atual, origem: 'este-aparelho' };
+    const novo = { ...atual, origem: 'aguardando' };
     if (tipo === 'recair') {
       novo.recorde = Math.max(atual.recorde || 0, agora - atual.inicio);
       novo.recaidas = [...(atual.recaidas || []), { em: agora, durou: agora - atual.inicio }].slice(-30);
@@ -56,7 +52,7 @@ export async function cartaoLimpo() {
   const r = await retrato();
   if (!r) {
     return h('article', { class: 'cartao' }, h('p', { class: 'rotulo rotulo--lit' }, 'Dias limpo'),
-      h('p', { class: 'texto-fraco' }, 'O contador vem do Vigia: abra o Oratório uma vez no Brave do PC, com a nova aba instalada.'));
+      h('p', { class: 'texto-fraco' }, 'O contador vem do Vigia: deixe o Brave aberto com a nova aba 1.5.0 ou mais nova, que manda o número para cá sozinha.'));
   }
   const dias = (Date.now() - r.inicio) / DIA;
   const m = proximaMeta(dias);
@@ -79,8 +75,8 @@ export async function render() {
     return { titulo: 'Dias limpo', secoes: [
       h('section', { class: 'cabeca' }, h('div', { class: 'miolo' }, h('p', { class: 'rotulo' }, 'Vigia'), h('h1', null, 'Dias limpo'))),
       h('section', null, h('div', { class: 'miolo miolo--estreito leitura' },
-        h('p', null, 'O contador é o do Vigia, da nova aba do Brave. Para ele aparecer aqui (e no celular), abra o Oratório uma vez no Brave do PC com a nova aba na versão 1.4.0 ou mais nova.'),
-        h('p', { class: 'texto-fraco' }, 'Depois disso, o que você registrar no celular chega ao Vigia na próxima vez que o PC abrir o Oratório.'))),
+        h('p', null, 'O contador é o do Vigia, da nova aba do Brave. Para ele aparecer aqui (e no celular), deixe o Brave aberto com a nova aba na versão 1.5.0 ou mais nova: ela manda o contador para cá sozinha, de 30 em 30 segundos, enquanto o Oratório estiver aberto.'),
+        h('p', { class: 'texto-fraco' }, 'O que você registrar aqui ("Recaí", "Tô com vontade"), no PC ou no celular, chega ao Vigia na mesma sincronia.'))),
     ] };
   }
   const agora = Date.now();
@@ -112,8 +108,8 @@ export async function render() {
         h('p', { style: 'font-family:var(--serif);font-size:2.4rem;line-height:1' }, String(r.tentativasHoje || 0)),
         h('p', { class: 'texto-fraco' }, 'Avisos e bloqueios do Vigia hoje (até o último retrato).'))),
     h('p', { class: 'texto-fraco', style: 'margin-top:1.2rem' },
-      r.origem === 'nova-aba' ? `Lido do Vigia agora (${dataHora(r.lidoEm)}).` : `Último retrato do Vigia: ${dataHora(r.lidoEm || agora)}. O que você registrar aqui vai para o Vigia quando o PC abrir o Oratório.`,
-      pendentes.length ? ` ${plural(pendentes.length, 'registro espera', 'registros esperam')} o PC.` : '')));
+      `Último retrato do Vigia: ${haQuanto(r.lidoEm || 0)}${r.lidoEm ? ` (${dataHora(r.lidoEm)})` : ''}.`,
+      pendentes.length ? ` ${plural(pendentes.length, 'registro espera', 'registros esperam')} o Brave (precisa estar aberto, com a nova aba 1.5.0).` : '')));
 
   const vontade = h('section', { id: 'vontade' }, h('div', { class: 'miolo' }, await painelVontade()));
   const historico = h('section', null, h('div', { class: 'miolo miolo--estreito' },

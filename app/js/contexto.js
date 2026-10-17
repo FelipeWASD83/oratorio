@@ -4,8 +4,7 @@
 import { api, dados, ErroApi } from './api.js';
 import { h, $, dataHora } from './util.js';
 import { diaLiturgico, hoje as hojeN, CORES } from './liturgia.js';
-import { criarPlano, juntarComNovaAba, salmoParaAveMaria } from './plano.js';
-import * as ponte from './ponte.js';
+import { criarPlano, salmoParaAveMaria } from './plano.js';
 
 export const ctx = {
   estado: null,
@@ -15,8 +14,6 @@ export const ctx = {
   versificacao: {},
   hojeLit: null,
   plano: null,
-  extensao: null,
-  sincroniaNovaAba: { quando: 0, erro: '' },
 };
 
 const CORES_CLARAS = { verde: '#9fd0a8', roxo: '#cdb2e8', branco: '#e3c676', vermelho: '#f2a2a5', rosa: '#f2adc6' };
@@ -37,7 +34,6 @@ export async function carregar() {
   ctx.versificacao = versificacao.salmos || {};
   ctx.plano = criarPlano(ctx.livros);
   atualizarDia();
-  ponte.extensao().then((v) => { ctx.extensao = v; });
 }
 
 export function atualizarDia() {
@@ -116,50 +112,29 @@ export async function marcarLidos(refs, valor = true) {
   const itens = {};
   for (const r of refs) itens[r] = valor ? { l: 1 } : null;
   await dados.lote('lidos', itens);
-  sincronizarNovaAba().catch(() => {});
 }
 
-/** Junta os capítulos lidos com o balão Bíblia da nova aba, nos dois sentidos. */
-export async function sincronizarNovaAba() {
-  if (!(await ponte.extensao())) return { ok: false, motivo: 'sem-extensao' };
-  try {
-    const [daExtensao, aqui, config] = await Promise.all([ponte.bibliaNovaAba.ler(), lidos({ recarregar: true }), dados.listar('config')]);
-    const visto = config.novaAbaVisto && Array.isArray(config.novaAbaVisto.refs) ? config.novaAbaVisto.refs : null;
-    const r = juntarComNovaAba(aqui, daExtensao.lidos, visto, ctx.livros);
-    const mudancas = {};
-    r.marcar.forEach((ref) => { mudancas[ref] = { l: 1 }; });
-    r.desmarcar.forEach((ref) => { mudancas[ref] = null; });
-    if (Object.keys(mudancas).length) await dados.lote('lidos', mudancas);
-    if (JSON.stringify(r.novaAba) !== JSON.stringify(daExtensao.lidos)) await ponte.bibliaNovaAba.gravar(r.novaAba);
-    await dados.gravar('config', 'novaAbaVisto', { refs: r.visto, quando: Date.now() });
-    ctx.sincroniaNovaAba = { quando: Date.now(), erro: '', trouxe: r.marcar.length, tirou: r.desmarcar.length };
-    return { ok: true, ...ctx.sincroniaNovaAba };
-  } catch (erro) {
-    ctx.sincroniaNovaAba = { quando: Date.now(), erro: erro.message };
-    return { ok: false, motivo: erro.message };
-  }
-}
-
-// ── o Vigia ──────────────────────────────────────────────────
+// ── a extensão da nova aba (Vigia e plano), em segundo plano ──
 
 /**
- * Com o cadeado aberto e a extensão aqui: entrega ao Vigia o que foi registrado em outro
- * aparelho (recaída, vontade vencida) e guarda o retrato do contador para o celular ver.
+ * A extensão do Brave sincroniza sozinha com este servidor de 30 em 30 segundos, se o Brave estiver aberto
+ * com a nova aba 1.5.0 ou mais nova: entrega o que foi registrado aqui (Recaí, Tô com vontade), troca os
+ * capítulos lidos com o balão Bíblia e deixa o retrato do Vigia em `vigia/retrato`. Aqui só se lê quando foi a
+ * última vez (`ctx.estado.ponte.quando`).
  */
-export async function sincronizarVigia() {
-  if (!ctx.estado.portao.aberto || !(await ponte.extensao())) return null;
-  const itens = await dados.listar('vigia', { recarregar: true });
-  for (const [k, v] of Object.entries(itens)) {
-    if (!k.startsWith('pendente:') || !v || v.aplicado) continue;
-    try {
-      if (v.tipo === 'recair') await ponte.vigia.recair(v.em);
-      else if (v.tipo === 'vontade') await ponte.vigia.vontadeVencida(v.em);
-      await dados.gravar('vigia', k, { ...v, aplicado: Date.now() });
-    } catch { /* tenta de novo na próxima */ }
-  }
-  const retrato = await ponte.vigia.ler();
-  await dados.gravar('vigia', 'retrato', { ...retrato, origem: 'nova-aba' });
-  return retrato;
+export function ultimaSincroniaDaExtensao() {
+  const q = ctx.estado.ponte && ctx.estado.ponte.quando;
+  return q || 0;
+}
+
+/** "agora há pouco" / "há 3 min" / "há 2 h" / "nunca". */
+export function haQuanto(ms) {
+  if (!ms) return 'nunca';
+  const s = Math.max(0, Math.round((Date.now() - ms) / 1000));
+  if (s < 90) return 'agora há pouco';
+  if (s < 5400) return `há ${Math.round(s / 60)} min`;
+  if (s < 172800) return `há ${Math.round(s / 3600)} h`;
+  return `há ${Math.round(s / 86400)} dias`;
 }
 
 // ── cadeado ──────────────────────────────────────────────────

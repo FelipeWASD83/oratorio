@@ -26,7 +26,7 @@ import config
 def t(texto: str, **campos) -> str:
     return texto.format(**campos) if campos else texto
 
-GERENCIADOS = ["servidor", "app", "ferramentas", "implantar", "versao.json", "package.json", "abrir.bat",
+GERENCIADOS = ["servidor", "app", "electron", "ferramentas", "implantar", "versao.json", "package.json", "package-lock.json", "abrir.bat",
                "README.md", "CHANGELOG.md", "LICENSE"]
 PASTA = Path(config.RAIZ / "dados" / "atualizacao")
 _CACHE = PASTA / "checagem.json"

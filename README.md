@@ -18,9 +18,9 @@ A cor de destaque do app inteiro é a **cor litúrgica do dia** (verde, roxo, br
 
 ## Abrir no PC
 
-Pelo atalho **Oratório** do Menu Iniciar: ele sobe o servidor sem janela e abre `http://localhost:8074` no Brave, que é onde mora a nova aba (de onde vêm os dias limpo e o plano). Se já estiver aberto, só abre o navegador. Para parar o servidor, o botão "parar" do widget Projetos da nova aba. O atalho é criado (ou refeito, se a pasta mudar de lugar) por `powershell -ExecutionPolicy Bypass -File .\ferramentas\criar-atalho.ps1`.
+É um app de janela (Electron). Abra pelo atalho **Oratório** do Menu Iniciar (ou pelo `abrir.bat`, que na primeira vez baixa o Electron, uns 250 MB só nesta pasta). Ele sobe o servidor sozinho, abre a janela e, quando você fecha a janela, para o servidor. O atalho é criado (ou refeito, se a pasta mudar de lugar) por `powershell -ExecutionPolicy Bypass -File .\ferramentas\criar-atalho.ps1`.
 
-Também dá para abrir pelo `abrir.bat` (servidor numa janela minimizada "Oratorio"; fechar a janela para o servidor).
+**Os dias limpo do Vigia e o plano da Bíblia** vêm da nova aba do Brave: a extensão (versão 1.5.0 ou mais nova) sincroniza com o Oratório sozinha, de 30 em 30 segundos, enquanto o **Brave estiver aberto e o Oratório também**. Você não precisa abrir nada no Brave. O que você registrar no Oratório ("Recaí", "Tô com vontade", capítulos lidos) chega ao Vigia e ao balão Bíblia na mesma sincronia.
 
 Na primeira vez, baixe os textos (uma vez só; ficam na pasta `cache`, fora do git):
 
@@ -64,7 +64,7 @@ node --test "testes/*.test.js"
 cd servidor; python -m unittest discover -s testes -t .
 ```
 
-A ponte com a nova aba tem o teste dela na `brave-nova-aba`: `node testes\testar-oratorio.js` e `node testes\testar-oratorio-navegador.js`.
+`node testes\testar-electron.cjs` abre o app de verdade por uns segundos. A sincronização com a nova aba tem o teste dela na `brave-nova-aba`: `node testes\testar-oratorio.js` e `node testes\testar-oratorio-navegador.js`.
 
 ## Licença
 

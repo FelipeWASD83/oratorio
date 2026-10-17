@@ -3,10 +3,11 @@
 Código de saída 3 do servidor = "baixei uma atualização, me suba de novo". Se a versão
 nova não subir (sai com erro em menos de 30 s), a anterior volta sozinha. Veio do clave.
 
-Abre no Brave quando ele existe: é lá que mora a nova aba, de onde vêm os dias limpo do
-Vigia e o plano da Bíblia.
+Quem abre a janela é o Electron (electron/main.cjs), que chama este arquivo com --sem-janela. Sem esse
+argumento ele abre o Oratório no Brave (ou no navegador padrão), para quem quiser usar numa aba.
+--porta, --modo e --dados seguem para o servidor (os testes usam).
 
-Uso: python servidor\\iniciar.py [--sem-janela]
+Uso: python servidor\\iniciar.py [--sem-janela] [--porta N] [--modo pc|demo] [--dados pasta]
 """
 from __future__ import annotations
 
@@ -25,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import atualizador  # noqa: E402
 import config  # noqa: E402
 
-PORTA = 8074
+PORTA_PADRAO = 8074
 LOG = config.RAIZ / "dados" / "supervisor.log"
 
 
@@ -68,8 +69,13 @@ def abrir_navegador(url: str) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--sem-janela", action="store_true", help="não abre o navegador (o preview do Claude Code usa assim)")
+    ap.add_argument("--sem-janela", action="store_true", help="não abre o navegador (o Electron e o preview do Claude Code usam assim)")
+    ap.add_argument("--porta", type=int, default=PORTA_PADRAO)
+    ap.add_argument("--modo", choices=("pc", "demo"), default="pc")
+    ap.add_argument("--dados", default="")
     a = ap.parse_args()
+    PORTA = a.porta
+    para_o_servidor = ["--porta", str(PORTA), "--modo", a.modo] + (["--dados", a.dados] if a.dados else [])
     url = f"http://localhost:{PORTA}/"
     if not porta_livre(PORTA):
         if respondendo(PORTA):
@@ -91,7 +97,7 @@ def main() -> int:
         except atualizador.ErroAtualizacao as erro:
             log(f"Atualização não aplicada: {erro}")
         inicio = time.time()
-        proc = subprocess.Popen([sys.executable, str(config.RAIZ / "servidor" / "servidor.py"), "--porta", str(PORTA)], cwd=str(config.RAIZ))
+        proc = subprocess.Popen([sys.executable, str(config.RAIZ / "servidor" / "servidor.py"), *para_o_servidor], cwd=str(config.RAIZ))
         if not aberto:
             for _ in range(80):
                 if proc.poll() is not None or respondendo(PORTA):
