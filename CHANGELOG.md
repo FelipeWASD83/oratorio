@@ -2,6 +2,11 @@
 
 A versão mais nova fica em cima. Ela mora aqui, no `versao.json` e no `package.json`.
 
+## 2.0.2 (17/10/2026)
+
+### Corrigido
+- **Árvore da Bíblia sem barra de rolagem a mais.** Ela ainda rolava a página inteira por dentro, além da lista e da ficha. Agora a árvore ocupa a tela, com o rodapé numa faixa fina, e só a lista e a ficha rolam.
+
 ## 2.0.1 (17/10/2026)
 
 ### Corrigido

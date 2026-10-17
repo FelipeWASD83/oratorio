@@ -29,7 +29,7 @@ function colinha() {
 }
 
 function arvore() {
-  const quadro = h('iframe', { class: 'embutido embutido--tela', src: 'vendor/arvore/index.html', title: 'Árvore da Bíblia', loading: 'eager' });
+  const quadro = h('iframe', { class: 'embutido embutido--tela', src: 'vendor/arvore/index.html?embutido', title: 'Árvore da Bíblia', loading: 'eager' });
   // A árvore tem faixa própria em cima e embaixo: aqui ela ocupa a tela inteira, sem cabeça nem rodapé, e só ela rola.
   const s = h('section', { class: 'bloco--cheio' }, quadro);
   return { titulo: 'Árvore da Bíblia', tela: true, secoes: [s], semRodape: true, depois: () => s.classList.remove('bloco--escuro') };

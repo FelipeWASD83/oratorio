@@ -118,7 +118,7 @@ Conferido em 1440×900, 3440×1440 (o miolo cresce a 136rem), 1080×1920 e 375×
   quadro medindo a altura do conteúdo, a capa media 25 mil px. Os dois embutidos têm a altura da
   janela e rolam por dentro. **Uma barra de rolagem só (2.0.1):** vista com `tela: true` põe
   `palco--tela` no `.palco` (altura da janela, sem rolar); o quadro toma o resto e só ele rola. A
-  colinha tem uma faixa fina no lugar do cabeçalho; a árvore não tem nada em volta. Cabeçalho grande
+  colinha tem uma faixa fina no lugar do cabeçalho; a árvore não tem nada em volta e abre com `?embutido` (modo da própria árvore: página sem rolagem, mesa na altura da janela; o CSP do servidor proíbe script inline, por isso a marca mora em `js/embutido.js`). Cabeçalho grande
   e rodapé em cima de um iframe de página inteira voltam a dar duas barras: não pôr.
 - `e.target.closest` estoura quando o evento vem do `document` (não é Element): o atalho do terço
   confere `instanceof Element`.
