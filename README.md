@@ -18,7 +18,9 @@ A cor de destaque do app inteiro é a **cor litúrgica do dia** (verde, roxo, br
 
 ## Abrir no PC
 
-Dois cliques no `abrir.bat`. Ele sobe o servidor (janela minimizada) e abre `http://localhost:8074` no Brave, que é onde mora a nova aba (de onde vêm os dias limpo e o plano). Para fechar, feche a janela minimizada "Oratorio".
+Pelo atalho **Oratório** do Menu Iniciar: ele sobe o servidor sem janela e abre `http://localhost:8074` no Brave, que é onde mora a nova aba (de onde vêm os dias limpo e o plano). Se já estiver aberto, só abre o navegador. Para parar o servidor, o botão "parar" do widget Projetos da nova aba. O atalho é criado (ou refeito, se a pasta mudar de lugar) por `powershell -ExecutionPolicy Bypass -File .\ferramentas\criar-atalho.ps1`.
+
+Também dá para abrir pelo `abrir.bat` (servidor numa janela minimizada "Oratorio"; fechar a janela para o servidor).
 
 Na primeira vez, baixe os textos (uma vez só; ficam na pasta `cache`, fora do git):
 

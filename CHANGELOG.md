@@ -2,6 +2,11 @@
 
 A versão mais nova fica em cima. Ela mora aqui, no `versao.json` e no `package.json`.
 
+## 1.0.1 (17/10/2026)
+
+### Novo
+- **Atalho no Menu Iniciar** ("Oratório", com ícone): abre sem janela de console e, se já estiver aberto, só abre o navegador.
+
 ## 1.0.0 (17/10/2026)
 
 Primeira versão.

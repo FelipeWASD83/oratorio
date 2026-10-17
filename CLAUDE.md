@@ -82,7 +82,7 @@ Conferido em 1440×900, 3440×1440 (o miolo cresce a 136rem), 1080×1920 e 375×
 
 ## 5. Rodar e testar
 
-- PC: `abrir.bat` (→ :8074, abre no Brave). Preview: entrada `oratorio-demo` do `launch.json` (:8075).
+- PC: atalho **Oratório** do Menu Iniciar (`ferramentas\criar-atalho.ps1`: `pythonw servidor\iniciar.py`, sem console; ícone em `app\icone.ico`, de `ferramentas\gerar_icone.py`; o `.ps1` sai do `ferramentas\_escrever_atalho.py`) ou `abrir.bat` (→ :8074, abre no Brave). Preview: entrada `oratorio-demo` do `launch.json` (:8075).
 - `node --test "testes/*.test.js"` (calendário, plano, conteúdo conferido, dicas).
 - `cd servidor; python -m unittest discover -s testes -t .` (armazém e sincronia, rotas, cadeado por
   senha, token, a IA contra um servidor FALSO no formato das duas APIs; nunca a API de verdade).
