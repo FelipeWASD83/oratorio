@@ -110,5 +110,10 @@ Conferido em 1440×900, 3440×1440 (o miolo cresce a 136rem), 1080×1920 e 375×
 ## 7. O que não foi verificado
 
 - A IA com chave de verdade (só servidor falso) e a qualidade real das respostas.
-- O servidor de casa e o celular de verdade (ver o relatório da entrega para o estado da implantação).
+- **Servidor de casa: instalado em 17/10/2026** (`implantar\enviar.ps1`), no ar na 8076, com a senha
+  do cadeado copiada do P.AI e o token criado lá. Conferido de fora: a página abre, a Bíblia e o
+  Catecismo respondem e a parte trancada devolve 423. A sincronia foi testada só lendo (numa pasta
+  temporária, 0 itens). **Não verificado:** o celular de verdade e destravar lá com a senha.
+- **Falta ele rodar no PC:** `implantar\configurar-sincronia.ps1` (grava o token no `.env`, que é
+  protegido para agentes) e `implantar\configurar-chaves.ps1` (as chaves de IA, ele cola).
 - A atualização pela release (nenhuma release publicada ainda).
