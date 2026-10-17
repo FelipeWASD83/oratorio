@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Colinha de pecados</title>
+  <meta name="description" content="Exame de consciência católico para levar à confissão: marque o que você cometeu e baixe a colinha em PNG ou PDF.">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/secoes.css">
+</head>
+<body>
+  <a class="pular" href="#lista">Ir direto para a lista</a>
+
+  <header class="capa" id="topo">
+    <div class="capa__topo">
+      <span class="capa__marca"><span class="cruz" aria-hidden="true"></span>Colinha</span>
+      <nav class="capa__nav" aria-label="Seções da página">
+        <a href="#como">Antes de marcar</a>
+        <a href="#lista">A lista</a>
+        <a href="#apoio">Na hora de confessar</a>
+      </nav>
+    </div>
+
+    <div class="capa__corpo">
+      <p class="capa__legenda">
+        Exame de consciência, segundo o Catecismo da Igreja Católica, para levar ao confessionário.
+        Marque o que você cometeu e baixe a colinha.
+      </p>
+      <h1 class="capa__titulo"><em>Colinha de</em> <span class="capa__palavra"><span class="inicial">P</span>ecados</span></h1>
+    </div>
+
+    <div class="capa__pe">
+      <p><strong id="qtdItens">0</strong> itens, cada um com o parágrafo do Catecismo</p>
+      <p>10 mandamentos, 5 preceitos da Igreja</p>
+      <p>Nada sai do seu aparelho</p>
+      <a class="capa__comecar" href="#como">Começar <span aria-hidden="true">↓</span></a>
+    </div>
+  </header>
+
+  <section class="como" id="como" aria-labelledby="como-titulo">
+    <div class="como__grade">
+      <div class="como__intro">
+        <h2 id="como-titulo"><em>Antes</em> de marcar</h2>
+        <p>
+          Marcar um item não quer dizer que você cometeu pecado mortal. Para ser mortal, o pecado precisa de
+          <strong>três coisas juntas</strong> (Catecismo, 1857). A lista mostra a matéria. As outras duas só você e
+          o confessor podem pesar.
+        </p>
+      </div>
+      <ol class="como__condicoes" id="condicoes"></ol>
+    </div>
+
+    <div class="como__grade como__grade--legenda">
+      <h3 class="como__sub"><em>Como ler</em> as marcas</h3>
+      <ul class="legenda" aria-label="Legenda das marcas">
+        <li class="legenda__item" data-g="g">
+          <span class="legenda__marca" aria-hidden="true"></span>
+          <div><strong>Matéria grave.</strong> O Catecismo trata como grave: se houver conhecimento e consentimento, é pecado mortal.</div>
+        </li>
+        <li class="legenda__item" data-g="d">
+          <span class="legenda__marca" aria-hidden="true"></span>
+          <div><strong>Pode ser grave.</strong> Depende do tamanho do dano, da intenção e das circunstâncias. Conte ao confessor e ele ajuda a pesar.</div>
+        </li>
+        <li class="legenda__item" data-g="l">
+          <span class="legenda__marca" aria-hidden="true"></span>
+          <div><strong>Matéria leve.</strong> Pecado venial: fere a amizade com Deus, mas não a rompe. Confessar é recomendado.</div>
+        </li>
+      </ul>
+      <p class="como__aviso">
+        Este site é uma ajuda de memória, não um tribunal. Ele não diz se você está em pecado mortal e não
+        substitui o confessor.
+      </p>
+    </div>
+  </section>
+
+  <section class="lista" id="lista" aria-labelledby="lista-titulo">
+    <h2 class="lista__titulo" id="lista-titulo"><em>O exame</em> de consciência</h2>
+
+    <div class="lista__grade">
+      <nav class="indice" id="indice" aria-label="Ir para um mandamento"></nav>
+
+      <div class="exame">
+        <div class="filtros">
+          <label class="busca">
+            <span class="busca__rotulo">Buscar um pecado</span>
+            <input class="busca__campo" id="busca" type="search" placeholder="ex.: mentira, missa, ira" autocomplete="off" spellcheck="false">
+          </label>
+          <div class="segmentos" role="radiogroup" aria-label="Filtrar por gravidade">
+            <label class="segmento"><input type="radio" name="modo" value="todos" checked><span>Todos</span></label>
+            <label class="segmento"><input type="radio" name="modo" value="g"><span>Graves</span></label>
+            <label class="segmento"><input type="radio" name="modo" value="d"><span>Podem ser graves</span></label>
+            <label class="segmento"><input type="radio" name="modo" value="l"><span>Leves</span></label>
+            <label class="segmento"><input type="radio" name="modo" value="marcados"><span>Marcados</span></label>
+          </div>
+          <p class="filtros__status" id="statusFiltro" aria-live="polite"></p>
+        </div>
+
+        <div class="exame__corpo" id="exame"></div>
+        <p class="vazio" id="vazio" hidden>Nenhum pecado encontrado com esse filtro. Tente outra palavra ou volte para "Todos".</p>
+      </div>
+
+      <aside class="folha-viva" id="colinha" aria-labelledby="colinha-titulo">
+        <h3 class="folha-viva__titulo" id="colinha-titulo"><em>Sua</em> colinha</h3>
+
+        <div class="contagem" aria-live="polite">
+          <div class="contagem__item" data-g="g"><strong id="cG">0</strong><span>graves</span></div>
+          <div class="contagem__item" data-g="d"><strong id="cD">0</strong><span>podem ser graves</span></div>
+          <div class="contagem__item" data-g="l"><strong id="cL">0</strong><span>leves</span></div>
+        </div>
+
+        <label class="campo-ultima">
+          <span>Minha última confissão foi há</span>
+          <input id="ultima" type="text" maxlength="60" placeholder="ex.: 3 meses" autocomplete="off">
+        </label>
+
+        <div class="folha-viva__lista" id="listaViva" role="region" tabindex="0" aria-label="Itens marcados">
+          <p class="folha-viva__vazio">Nada marcado ainda. Marque os itens do exame e eles aparecem aqui.</p>
+        </div>
+
+        <p class="aviso-armazem" id="avisoArmazem" hidden>
+          Este navegador não deixa guardar os dados: se você fechar a página, as marcações somem. Baixe a colinha antes.
+        </p>
+
+        <div class="acoes">
+          <button class="botao botao--primario" type="button" data-exportar="pdf">Baixar PDF</button>
+          <button class="botao" type="button" data-exportar="png">Baixar PNG</button>
+        </div>
+        <p class="acoes__status" id="statusExportar" role="status" aria-live="polite"></p>
+        <button class="botao-texto" type="button" id="abrirLimpar">Já me confessei: apagar tudo</button>
+        <p class="folha-viva__nota">As marcações ficam só neste navegador. Nada é enviado a lugar nenhum.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="apoio" id="apoio" aria-labelledby="apoio-titulo">
+    <h2 class="apoio__titulo" id="apoio-titulo"><em>Na hora</em> de confessar</h2>
+    <div class="apoio__grade">
+      <div class="apoio__bloco">
+        <h3>Como é a confissão</h3>
+        <ol class="passos" id="passos"></ol>
+        <blockquote class="contricao">
+          <p id="contricao"></p>
+          <footer>Uma das formas do ato de contrição</footer>
+        </blockquote>
+      </div>
+
+      <div class="apoio__bloco">
+        <h3>Os sete pecados capitais</h3>
+        <p class="apoio__lead">
+          Não são "os pecados mortais". São vícios de onde nascem muitos outros (Catecismo, 1866). Na lista, cada
+          item ligado a um deles leva a etiqueta.
+        </p>
+        <dl class="capitais" id="capitais"></dl>
+      </div>
+
+      <div class="apoio__bloco">
+        <h3>Pecados que bradam ao céu</h3>
+        <p class="apoio__lead">São cinco, segundo a tradição catequética (Catecismo, 1867):</p>
+        <ul class="simples" id="bradam"></ul>
+
+        <h3 class="apoio__sub">Contra o Espírito Santo</h3>
+        <p class="apoio__lead">
+          Seis, na tradição da Igreja (não é lista do Catecismo). O Catecismo trata do endurecimento que recusa o
+          perdão (1864).
+        </p>
+        <ul class="simples" id="espirito"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="rodape">
+    <p>
+      Textos em paráfrase, a partir do <em>Catecismo da Igreja Católica</em> (edição em português no vatican.va).
+      O número depois de cada item é o parágrafo do Catecismo onde a matéria é tratada.
+    </p>
+    <p>Fonte das letras: EB Garamond, licença SIL Open Font. Nenhum dado seu sai deste aparelho.</p>
+  </footer>
+
+  <div class="barra" id="barra" role="region" aria-label="Resumo e exportação">
+    <button class="barra__ver" type="button" id="barraVer">
+      <strong id="barraQtd">0</strong> marcados
+    </button>
+    <button class="botao botao--barra" type="button" data-exportar="pdf">PDF</button>
+    <button class="botao botao--barra" type="button" data-exportar="png">PNG</button>
+  </div>
+
+  <dialog class="dialogo" id="dlgLimpar" aria-labelledby="dlgTitulo">
+    <form method="dialog">
+      <h2 id="dlgTitulo">Apagar tudo?</h2>
+      <p>Isso apaga todas as marcações, as quantidades e as observações guardadas neste aparelho. Não dá para desfazer.</p>
+      <div class="dialogo__acoes">
+        <button class="botao" value="cancelar" autofocus>Voltar</button>
+        <button class="botao botao--perigo" value="apagar">Apagar tudo</button>
+      </div>
+    </form>
+  </dialog>
+
+  <noscript><p class="sem-js">Esta página precisa de JavaScript para funcionar.</p></noscript>
+  <script type="module" src="../../js/colinha-ponte.js"></script>
+</body>
+</html>

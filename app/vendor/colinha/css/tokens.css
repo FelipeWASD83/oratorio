@@ -1,0 +1,64 @@
+/* Tokens: tudo o que dá para trocar na mão. Cores, letras, espaços e tempos.
+   Para mudar uma cor do site inteiro, mude só aqui. */
+
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('../vendor/fontes/garamond-normal-latin.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('../vendor/fontes/garamond-italic-latin.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* Papel e tinta: os dois tons do site. Claro = papel, escuro = tinta. */
+  --papel: #f5edda;          /* fundo claro principal */
+  --papel-2: #ecdfc3;        /* cartões e item marcado */
+  --papel-3: #dccdaa;        /* linhas finas e bordas */
+  --papel-4: #e9dcc0;        /* fundo do rodapé (claro, um degrau abaixo do papel) */
+  --tinta: #1c1814;          /* fundo escuro e texto forte */
+  --tinta-2: #4a4036;        /* texto de apoio sobre papel (contraste 8,7:1) */
+  --tinta-3: #6b5f50;        /* texto terciário sobre papel (contraste 5,3:1) */
+  --creme: #ece3cf;          /* texto sobre fundo escuro */
+  --creme-2: #c9bfa8;        /* texto de apoio sobre fundo escuro */
+  --linha-escura: rgb(236 227 207 / 0.22);
+
+  /* A rubrica: o vermelho dos missais. Só aparece onde a matéria é grave
+     (e na inicial do título). */
+  --rubrica: #a5221b;        /* sobre papel (contraste 6,3:1) */
+  --rubrica-clara: #ef7b68;  /* sobre fundo escuro (contraste 6,5:1) */
+  --foco: #a5221b;
+
+  /* Letras */
+  --fonte: 'EB Garamond', 'Cormorant Garamond', Garamond, 'Times New Roman', serif;
+  --t-mini: 0.9rem;          /* etiquetas em caixa alta */
+  --t-pequeno: 1rem;         /* notas e metadados */
+  --t-corpo: 1.1875rem;      /* texto corrido */
+  --t-destaque: 1.5rem;
+  --t-h3: 1.75rem;
+  --t-h2: clamp(2.4rem, 4.4vw, 4.4rem);
+  --t-capa: clamp(3.6rem, 10.5vw, 17rem);
+
+  /* Espaços (escala 4, 8, 12, 16, 24, 32, 48, 64 sobre 1rem = 16) */
+  --e1: 0.25rem;
+  --e2: 0.5rem;
+  --e3: 0.75rem;
+  --e4: 1rem;
+  --e6: 1.5rem;
+  --e8: 2rem;
+  --e12: 3rem;
+  --e16: 4rem;
+  --e24: 6rem;
+  --margem: clamp(1rem, 4vw, 4rem);
+
+  /* Forma e movimento */
+  --raio: 4px;
+  --rapido: 150ms;
+  --normal: 300ms;
+}

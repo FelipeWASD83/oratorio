@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Oratório</title>
+  <meta name="description" content="Bíblia católica, plano de leitura, orações, terço, calendário litúrgico, guias e a IA que responde pelo Catecismo.">
+  <meta name="theme-color" content="#1c1a17">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="icone.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icone-180.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/vistas.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="lateral" id="lateral" aria-label="Menu">
+      <a class="marca" href="#/hoje"><span class="marca__cruz" aria-hidden="true"></span><span class="marca__nome">Oratório</span></a>
+      <a class="lateral__dia" id="lateralDia" href="#/calendario"><b>…</b><span></span></a>
+      <nav class="nav" id="nav">
+        <div class="nav__grupo">
+          <span class="nav__titulo">O dia</span>
+          <a href="#/hoje" data-rota="hoje">Hoje</a>
+          <a href="#/calendario" data-rota="calendario">Calendário</a>
+        </div>
+        <div class="nav__grupo">
+          <span class="nav__titulo">A Palavra</span>
+          <a href="#/biblia" data-rota="biblia">Bíblia</a>
+          <a href="#/plano" data-rota="plano">Plano de leitura</a>
+          <a href="#/catecismo" data-rota="catecismo">Catecismo</a>
+          <a href="#/arvore" data-rota="arvore">Árvore da Bíblia</a>
+        </div>
+        <div class="nav__grupo">
+          <span class="nav__titulo">Oração</span>
+          <a href="#/oracoes" data-rota="oracoes">Orações</a>
+          <a href="#/terco" data-rota="terco">Terço</a>
+          <a href="#/escrever" data-rota="escrever">Escrever oração</a>
+        </div>
+        <div class="nav__grupo">
+          <span class="nav__titulo">Caminho</span>
+          <a href="#/perguntar" data-rota="perguntar">Isso é pecado?</a>
+          <a href="#/guias" data-rota="guias">Guias</a>
+          <a href="#/colinha" data-rota="colinha">Colinha de pecados</a>
+          <a href="#/limpo" data-rota="limpo">Dias limpo <span class="nav__cadeado" id="navCadeado" aria-hidden="true"></span></a>
+        </div>
+        <div class="nav__grupo">
+          <a href="#/ajustes" data-rota="ajustes">Ajustes</a>
+        </div>
+      </nav>
+      <div class="lateral__pe" id="lateralPe"></div>
+    </aside>
+
+    <div class="palco">
+      <main id="vista" tabindex="-1"></main>
+      <footer class="rodape" id="rodape"></footer>
+    </div>
+
+    <nav class="abas" aria-label="Atalhos">
+      <a href="#/hoje" data-rota="hoje"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>Hoje</a>
+      <a href="#/biblia" data-rota="biblia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M11 7v5M8.5 9.5h5"/></svg>Bíblia</a>
+      <a href="#/oracoes" data-rota="oracoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3c-1.5 3-4 4.5-4 8a4 4 0 0 0 8 0c0-3.5-2.5-5-4-8z"/><path d="M8 21h8"/></svg>Orar</a>
+      <a href="#/perguntar" data-rota="perguntar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.2v.3"/></svg>Perguntar</a>
+      <button type="button" id="botaoMais"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Mais</button>
+    </nav>
+  </div>
+
+  <div class="fundo-gaveta" id="fundoGaveta"></div>
+  <aside class="gaveta" id="gaveta" aria-label="Texto citado" aria-hidden="true">
+    <div class="gaveta__topo"><span class="rotulo" id="gavetaTitulo"></span><button class="botao botao--fantasma botao--pequeno" type="button" id="gavetaFechar">Fechar</button></div>
+    <div class="gaveta__corpo" id="gavetaCorpo"></div>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <noscript><p style="padding:2rem">O Oratório precisa de JavaScript.</p></noscript>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

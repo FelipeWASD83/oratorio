@@ -1,0 +1,10 @@
+{
+  "name": "oratorio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Oratório: Bíblia católica, plano de leitura, orações, terço, calendário litúrgico, guias e a IA pelo Catecismo.",
+  "scripts": {
+    "test": "node --test \"testes/*.test.js\""
+  }
+}

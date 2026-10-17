@@ -1,0 +1,10 @@
+# dados de quem usa (banco, senha, token, chaves)
+dados/
+.env
+# textos com direito autoral (Bíblia e Catecismo), baixados por ferramentas\
+cache/
+# o IP do servidor de casa
+implantar/servidor.txt
+__pycache__/
+*.pyc
+node_modules/

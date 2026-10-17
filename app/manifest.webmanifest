@@ -1,0 +1,12 @@
+{
+  "name": "Oratório",
+  "short_name": "Oratório",
+  "start_url": "./#/hoje",
+  "display": "standalone",
+  "background_color": "#1c1a17",
+  "theme_color": "#1c1a17",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "icone-180.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

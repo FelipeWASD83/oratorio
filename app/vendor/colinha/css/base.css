@@ -1,0 +1,100 @@
+/* Base: reset leve, letra, foco, botões e o que se repete em toda a página. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-size: clamp(18px, 0.35vw + 14px, 22px);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--fonte);
+  font-size: var(--t-corpo);
+  line-height: 1.5;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, p, ol, ul, dl, dd, figure, blockquote { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+h1, h2, h3, h4 { font-weight: 500; line-height: 1.1; text-wrap: balance; }
+em { font-style: italic; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.como :focus-visible, .apoio :focus-visible, .barra :focus-visible {
+  outline-color: var(--rubrica-clara);
+}
+
+.pular {
+  position: absolute;
+  left: var(--e4);
+  top: -4rem;
+  z-index: 20;
+  padding: var(--e2) var(--e4);
+  background: var(--tinta);
+  color: var(--creme);
+  text-decoration: none;
+}
+.pular:focus { top: var(--e4); }
+
+/* Botões */
+.botao {
+  min-height: 2.75rem;
+  padding: 0.5rem 1.25rem;
+  border: 1.5px solid var(--tinta);
+  border-radius: var(--raio);
+  background: transparent;
+  color: var(--tinta);
+  font-size: var(--t-pequeno);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background var(--rapido), color var(--rapido), border-color var(--rapido);
+}
+.botao:hover { background: var(--tinta); color: var(--papel); }
+.botao--primario { background: var(--tinta); color: var(--papel); }
+.botao--primario:hover { background: var(--rubrica); border-color: var(--rubrica); }
+.botao:disabled { opacity: 0.45; cursor: not-allowed; }
+.botao:disabled:hover { background: transparent; color: var(--tinta); }
+.botao--primario:disabled:hover { background: var(--tinta); color: var(--papel); }
+.botao--perigo { border-color: var(--rubrica); color: var(--rubrica); }
+.botao--perigo:hover { background: var(--rubrica); color: var(--papel); }
+
+.botao-texto {
+  padding: var(--e2) 0;
+  min-height: 2.75rem;
+  border: 0;
+  background: none;
+  color: var(--rubrica);
+  font-size: var(--t-pequeno);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-align: left;
+}
+.botao-texto:hover { text-decoration-thickness: 2px; }
+
+.sr-so {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.sem-js { padding: var(--e8); text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

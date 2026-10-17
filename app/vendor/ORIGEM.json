@@ -1,0 +1,14 @@
+{
+ "colinha": {
+  "pasta": "colinha-de-pecados",
+  "commit": "b80440b"
+ },
+ "arvore": {
+  "pasta": "arvore-biblica",
+  "commit": "9b748f0"
+ },
+ "vigia": {
+  "pasta": "brave-nova-aba",
+  "commit": "3157919"
+ }
+}

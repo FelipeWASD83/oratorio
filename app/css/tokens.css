@@ -1,0 +1,87 @@
+/* Oratório: o sistema visual "Livro de Horas".
+   Papel e tinta, a EB Garamond na Escritura e nos títulos, a Source Sans 3 na interface.
+   A ÚNICA cor de ação é a cor litúrgica do dia: o JS troca --lit e --lit-claro
+   (verde, roxo, branco que na tela vira dourado, vermelho, rosa).
+   Para mudar uma cor à mão: troque o valor aqui e recarregue (Ctrl+F5). */
+
+@font-face { font-family: 'EB Garamond'; src: url('../fontes/garamond-normal-latin.woff2') format('woff2'); font-weight: 400 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'EB Garamond'; src: url('../fontes/garamond-italic-latin.woff2') format('woff2'); font-weight: 400 700; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Source Sans 3'; src: url('../fontes/sans-normal-latin.woff2') format('woff2'); font-weight: 400 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Source Sans 3'; src: url('../fontes/sans-italic-latin.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+
+:root {
+  /* fundos: papel (claro) e tinta (escuro), um degrau de cada */
+  --papel: #f4efe4;
+  --papel-2: #ebe3d3;
+  --papel-3: #e1d8c5;
+  --tinta: #1c1a17;
+  --tinta-2: #282520;
+  --tinta-3: #34302a;
+
+  /* texto sobre o papel */
+  --texto: #1c1a17;
+  --texto-2: #554f47;
+  --texto-3: #7d756a;
+  /* texto sobre a tinta */
+  --sobre-tinta: #f1ece2;
+  --sobre-tinta-2: #bdb4a6;
+  --sobre-tinta-3: #8c8476;
+
+  --borda: #d3c9b5;
+  --borda-tinta: #3d3832;
+
+  /* cor litúrgica do dia (o JS troca): --lit no papel, --lit-claro na tinta */
+  --lit: #2f6b3a;
+  --lit-claro: #9fd0a8;
+  --lit-texto: #ffffff;              /* texto em cima de um botão --lit */
+  --lit-suave: color-mix(in srgb, var(--lit) 12%, var(--papel));
+
+  /* avisos: só o vermelho do "grave" e o verde do "tudo certo" */
+  --grave: #9b1c1c;
+  --grave-claro: #f2a3a3;
+  --certo: #2f6b3a;
+
+  /* tipografia */
+  --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --sans: 'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+  --t-rotulo: 0.74rem;
+  --t-pequeno: 0.88rem;
+  --t-corpo: 1rem;
+  --t-grande: 1.3rem;
+  --t-titulo: 2.1rem;
+  --t-capa: clamp(2.5rem, 1.6rem + 2.6vw, 4.6rem);
+
+  /* espaço (escala de 4/8) */
+  --e1: 0.25rem;
+  --e2: 0.5rem;
+  --e3: 0.75rem;
+  --e4: 1rem;
+  --e5: 1.5rem;
+  --e6: 2rem;
+  --e7: 3rem;
+  --e8: 4.5rem;
+
+  /* forma e movimento */
+  --raio: 6px;
+  --raio-grande: 14px;
+  --sombra: 0 1px 2px rgb(28 26 23 / 0.07), 0 6px 18px rgb(28 26 23 / 0.07);
+  --rapido: 150ms;
+  --normal: 300ms;
+
+  /* medidas */
+  --lateral: 15rem;
+  --leitura: 40rem;
+  --miolo: 84rem;
+  --abas: 4.1rem;
+}
+
+html { font-size: 17px; }
+@media (min-width: 1500px) { html { font-size: 18px; } }
+@media (min-width: 2600px) { html { font-size: 20px; } }
+/* ultrawide: o miolo cresce junto (as grades ganham colunas), o texto corrido continua estreito */
+@media (min-width: 2400px) { :root { --miolo: 136rem; } }
+@media (max-width: 420px) { html { font-size: 16px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --rapido: 0ms; --normal: 0ms; }
+}

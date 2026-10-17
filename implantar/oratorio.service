@@ -1,0 +1,21 @@
+# Serviço do usuário (fica em ~/.config/systemd/user/). Sobe no boot sem login
+# porque o linger do usuário está ligado (o preparar-servidor.ps1 do contato-ia liga).
+[Unit]
+Description=Oratório (Bíblia, orações e o resto, para o celular)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/oratorio
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUTF8=1
+Environment=LANG=C.UTF-8
+UMask=0077
+# Só biblioteca padrão do Python: não há venv nem pacote para instalar.
+ExecStart=/usr/bin/python3 %h/oratorio/servidor/servidor.py --modo servidor --porta 8076 --dados %h/oratorio/dados
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

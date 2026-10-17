@@ -1,0 +1,180 @@
+/* vistas.css: o que é de uma tela só (Bíblia, plano, orações, terço, editor, perguntas, Catecismo, calendário, guias). */
+
+mark { background: color-mix(in srgb, var(--lit) 22%, transparent); color: inherit; border-radius: 2px; padding: 0 1px; }
+
+/* ── Bíblia ── */
+.livros { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); gap: 2px var(--e5); margin-top: var(--e3); }
+.livro-item { display: grid; grid-template-columns: 3rem 1fr; grid-template-rows: auto 3px; column-gap: var(--e2); padding: var(--e2) 0; text-decoration: none; color: inherit; border-bottom: 1px solid var(--borda); align-items: baseline; }
+.bloco--escuro .livro-item { border-color: var(--borda-tinta); }
+.livro-item:hover .livro-item__nome { color: var(--lit); }
+.bloco--escuro .livro-item:hover .livro-item__nome { color: var(--lit-claro); }
+.livro-item__abrev { font-size: var(--t-pequeno); color: var(--texto-3); font-weight: 600; }
+.bloco--escuro .livro-item__abrev { color: var(--sobre-tinta-3); }
+.livro-item__nome { font-family: var(--serif); font-size: 1.15rem; transition: color var(--rapido); display: flex; gap: var(--e2); align-items: baseline; flex-wrap: wrap; }
+.livro-item__selo { font-family: var(--sans); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--lit); border: 1px solid currentColor; border-radius: 999px; padding: 0 0.4rem; }
+.bloco--escuro .livro-item__selo { color: var(--lit-claro); }
+.livro-item__barra { grid-column: 1 / -1; height: 2px; background: transparent; margin-top: 4px; }
+.livro-item__barra span { display: block; height: 100%; background: var(--lit); }
+.bloco--escuro .livro-item__barra span { background: var(--lit-claro); }
+
+.leitor-miolo { display: grid; gap: var(--e5); justify-items: start; }
+.leitor-miolo .escritura { justify-self: center; width: 100%; }
+@media (min-width: 1200px) { .leitor-miolo { justify-items: center; } }
+.leitor-ferramentas { display: flex; gap: var(--e2); align-items: center; flex-wrap: wrap; width: 100%; max-width: 38rem; justify-self: center; }
+.leitor-pe { display: flex; justify-content: space-between; gap: var(--e3); width: 100%; max-width: 38rem; justify-self: center; flex-wrap: wrap; padding-top: var(--e5); border-top: 1px solid var(--borda); }
+.verso { cursor: pointer; border-radius: 3px; transition: background var(--rapido); }
+.verso:hover { background: color-mix(in srgb, var(--lit) 7%, transparent); }
+.verso--marcado { background: color-mix(in srgb, var(--lit) 16%, transparent); box-shadow: 0 2px 0 color-mix(in srgb, var(--lit) 55%, transparent); }
+.verso--ativo { background: color-mix(in srgb, var(--lit) 24%, transparent); }
+.verso__nota { font-family: var(--sans); font-size: 0.6em; color: var(--lit); vertical-align: 0.4em; margin-left: 0.15em; }
+
+.capitulos { display: grid; grid-template-columns: repeat(auto-fill, minmax(2.6rem, 1fr)); gap: 6px; margin-top: var(--e3); }
+.capitulos--compacto { grid-template-columns: repeat(auto-fill, minmax(2.2rem, 1fr)); gap: 4px; }
+.capitulo {
+  display: grid; place-items: center; min-height: 2.4rem; border-radius: var(--raio); border: 1px solid var(--borda);
+  font-size: var(--t-pequeno); text-decoration: none; color: inherit; background: transparent; cursor: pointer; padding: 0;
+  transition: background var(--rapido), border-color var(--rapido), color var(--rapido);
+}
+.capitulos--compacto .capitulo { min-height: 2rem; }
+.bloco--escuro .capitulo { border-color: var(--borda-tinta); color: var(--sobre-tinta-2); }
+.capitulo:hover { border-color: var(--lit); }
+.bloco--escuro .capitulo:hover { border-color: var(--lit-claro); }
+.capitulo--lido { background: var(--lit); border-color: var(--lit); color: var(--lit-texto); }
+.bloco--escuro .capitulo--lido { background: var(--lit-claro); border-color: var(--lit-claro); color: var(--tinta); }
+.capitulo--atual { outline: 2px solid var(--lit); outline-offset: 2px; }
+.bloco--escuro .capitulo--atual { outline-color: var(--lit-claro); }
+
+.resultados > li { padding: var(--e4) 0; display: grid; gap: var(--e1); }
+
+/* ── plano ── */
+.etapas { display: grid; gap: 0; border-top: 1px solid var(--borda); }
+.etapa { border-bottom: 1px solid var(--borda); }
+.etapa__cabeca { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: grid; grid-template-columns: 2.6rem 1fr auto; grid-template-rows: auto auto; column-gap: var(--e4); row-gap: var(--e2); padding: var(--e4) 0; align-items: baseline; }
+.etapa__cabeca:focus-visible { outline: 2px solid var(--lit); }
+.etapa__num { font-family: var(--serif); font-size: 1.4rem; color: var(--texto-3); font-style: italic; }
+.etapa__nome { font-family: var(--serif); font-size: 1.4rem; display: grid; }
+.etapa__nome small { font-family: var(--sans); font-size: var(--t-pequeno); color: var(--texto-3); }
+.etapa__conta { font-size: var(--t-pequeno); color: var(--texto-2); font-variant-numeric: tabular-nums; }
+.etapa__barra { grid-column: 2 / -1; }
+.etapa--atual .etapa__num, .etapa--atual .etapa__nome { color: var(--lit); }
+.etapa--feita .etapa__nome { color: var(--texto-3); }
+.etapa__corpo { padding: 0 0 var(--e5) calc(2.6rem + var(--e4)); display: grid; gap: var(--e4); }
+.grade-livro__topo { display: flex; justify-content: space-between; gap: var(--e3); align-items: baseline; flex-wrap: wrap; }
+.grade-livro__topo a { font-family: var(--serif); font-size: 1.2rem; text-decoration: none; }
+@media (max-width: 600px) { .etapa__corpo { padding-left: 0; } }
+
+/* ── orações ── */
+.grupo-oracoes + .grupo-oracoes { margin-top: var(--e7); }
+.grupo-oracoes > .rotulo { margin-bottom: var(--e3); display: block; }
+.oracao summary { cursor: pointer; list-style: none; }
+.oracao summary::-webkit-details-marker { display: none; }
+.oracao summary h3::after { content: ' +'; color: var(--lit); font-family: var(--sans); font-size: 1rem; }
+.oracao[open] summary h3::after { content: ' −'; }
+.oracao__texto { font-family: var(--serif); font-size: 1.18rem; line-height: 1.6; display: grid; gap: var(--e2); }
+.oracao__v, .oracao__r { padding-left: 1.4rem; text-indent: -1.4rem; }
+.oracao__r { color: var(--texto-2); }
+
+/* ── terço ── */
+.terco { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--e7); align-items: start; }
+.terco__principal { cursor: pointer; display: grid; gap: var(--e4); min-height: 22rem; align-content: start; }
+.terco__oracao { font-family: var(--serif); font-size: clamp(1.45rem, 1.1rem + 0.9vw, 2.1rem); line-height: 1.5; display: grid; gap: var(--e3); max-width: 38rem; }
+.terco__botoes { display: flex; gap: var(--e2); flex-wrap: wrap; margin-top: var(--e3); }
+.terco__lado { position: sticky; top: var(--e5); }
+.terco__meditar { display: grid; gap: var(--e2); }
+.terco__meditar h3 { font-size: 1.6rem; }
+.terco__fio { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; min-height: 2.2rem; }
+.conta { width: 1.1rem; height: 1.1rem; border-radius: 50%; border: 2px solid var(--sobre-tinta-3); transition: background var(--normal), transform var(--normal); }
+.conta--pai { width: 1.6rem; height: 1.6rem; }
+.conta--feita { background: var(--sobre-tinta-3); }
+.conta--atual { background: var(--lit-claro); border-color: var(--lit-claro); transform: scale(1.35); }
+@media (max-width: 900px) { .terco { grid-template-columns: 1fr; gap: var(--e6); } .terco__lado { position: static; } }
+
+/* ── editor de oração ── */
+.editor { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 1fr); gap: var(--e7); align-items: start; }
+.editor__principal { display: grid; gap: var(--e4); }
+.editor__titulo { font-family: var(--serif); font-size: 1.6rem; min-height: 3.2rem; }
+.editor__modelo { display: grid; gap: var(--e1); }
+.editor__texto { font-family: var(--serif); font-size: 1.28rem; line-height: 1.65; min-height: 22rem; padding: var(--e4) var(--e5); }
+.editor__acoes { display: flex; gap: var(--e2); align-items: center; flex-wrap: wrap; }
+.editor__lado { position: sticky; top: var(--e5); display: grid; gap: var(--e3); }
+.dicas { display: grid; gap: var(--e3); }
+.dica { display: grid; grid-template-columns: 0.7rem 1fr; gap: var(--e3); align-items: baseline; font-size: 0.97rem; color: var(--texto-2); }
+.dica__marca { width: 0.55rem; height: 0.55rem; border-radius: 50%; border: 2px solid var(--lit); position: relative; top: -0.05rem; }
+.dica--ok .dica__marca { background: var(--certo); border-color: var(--certo); }
+.dica--cuidado .dica__marca { border-color: var(--grave); }
+.dica--cuidado { color: var(--texto); }
+.revisao { display: grid; gap: var(--e3); }
+.revisao:empty { display: none; }
+.revisao__fortes { margin: 0; padding-left: 1.2rem; color: var(--texto-2); }
+.revisao__versao summary { cursor: pointer; color: var(--lit); }
+@media (max-width: 900px) { .editor { grid-template-columns: 1fr; gap: var(--e6); } .editor__lado { position: static; } }
+
+/* ── perguntas ── */
+.resposta { display: grid; gap: var(--e3); }
+.resposta > p { font-size: 1.08rem; }
+.resposta__pergunta { font-family: var(--serif); font-size: 1.5rem !important; line-height: 1.3; }
+.resposta__resumo { font-family: var(--serif); font-size: 1.4rem !important; line-height: 1.4; }
+.citacoes { display: grid; gap: var(--e2); }
+.citacao-cic { border: 1px solid var(--borda); border-radius: var(--raio); padding: var(--e3) var(--e4); background: var(--papel-2); }
+.citacao-cic summary { cursor: pointer; }
+.citacao-cic--falsa { border-color: var(--grave); }
+.citacao-cic__texto { font-family: var(--serif); font-size: 1.12rem; line-height: 1.6; white-space: pre-line; }
+.citacao-biblia { border-left: 3px solid var(--lit); padding: var(--e1) 0 var(--e1) var(--e4); display: grid; gap: var(--e1); }
+
+/* ── Catecismo ── */
+.cic-texto { font-family: var(--serif); font-size: 1.1rem; line-height: 1.6; margin-top: var(--e1); }
+.cic-par { display: grid; grid-template-columns: 3.4rem 1fr; gap: var(--e4); padding: var(--e4) 0; border-bottom: 1px solid var(--borda); scroll-margin-top: var(--e5); }
+.cic-par__n { font-family: var(--sans); font-weight: 600; color: var(--texto-3); text-decoration: none; padding-top: 0.25rem; }
+.cic-par__texto { font-family: var(--serif); font-size: 1.2rem; line-height: 1.65; display: grid; gap: var(--e2); color: var(--texto-2); }
+.cic-par--atual .cic-par__texto { color: var(--texto); }
+.cic-par--atual .cic-par__n { color: var(--lit); }
+
+/* ── calendário ── */
+.calendario { display: grid; grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr); gap: var(--e6); align-items: start; }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal__semana { font-size: var(--t-rotulo); text-transform: uppercase; letter-spacing: 0.12em; color: var(--texto-3); padding: 0 var(--e1) var(--e1); }
+.cal__dia {
+  position: relative; min-height: 5.4rem; padding: var(--e2) var(--e2) var(--e2) calc(var(--e2) + 5px); border-radius: var(--raio);
+  background: var(--papel-2); color: inherit; text-decoration: none; display: flex; flex-direction: column; gap: 2px; overflow: hidden;
+  border: 1px solid transparent; transition: border-color var(--rapido);
+}
+.cal__dia::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--cor); }
+.cal__dia:hover { border-color: var(--borda); }
+.cal__dia--fora { opacity: 0.42; }
+.cal__dia--hoje .cal__num { background: var(--tinta); color: var(--sobre-tinta); border-radius: 999px; padding: 0 0.45rem; }
+.cal__dia--escolhido { border-color: var(--lit); }
+.cal__num { font-weight: 600; font-size: var(--t-pequeno); align-self: flex-start; }
+.cal__nome { font-family: var(--serif); font-size: 0.92rem; line-height: 1.15; color: var(--texto-2); }
+.cal__marca { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--grave); margin-top: auto; }
+.cal__detalhe { position: sticky; top: var(--e5); }
+@media (max-width: 1000px) { .calendario { grid-template-columns: 1fr; } .cal__detalhe { position: static; } }
+@media (max-width: 640px) { .cal__dia { min-height: 3.6rem; } .cal__nome { display: none; } .cal__semana { padding: 0; text-align: center; } }
+
+/* ── guias ── */
+.guia { display: grid; gap: var(--e4); }
+.guia .titulo-secao { margin-bottom: var(--e2); }
+.guia__p { font-size: 1.1rem; max-width: var(--leitura); }
+.guia__lista, .guia__passos { margin: 0; padding-left: 1.3rem; display: grid; gap: var(--e3); max-width: var(--leitura); font-size: 1.05rem; }
+.guia__passos li::marker { font-family: var(--serif); font-style: italic; color: var(--lit); }
+.bloco--escuro .guia__passos li::marker { color: var(--lit-claro); }
+.missa { display: grid; gap: var(--e6); margin-top: var(--e3); }
+.missa__cabeca { display: flex; justify-content: space-between; align-items: baseline; gap: var(--e3); flex-wrap: wrap; border-bottom: 1px solid var(--borda); padding-bottom: var(--e2); }
+.bloco--escuro .missa__cabeca { border-color: var(--borda-tinta); }
+.missa__cabeca h3 { font-size: 1.6rem; }
+.missa__itens { display: grid; gap: var(--e4); margin-top: var(--e4); }
+.missa__item { display: grid; gap: var(--e2); }
+.missa__texto { font-family: var(--serif); font-size: 1.12rem; font-style: italic; padding-left: var(--e4); border-left: 2px solid var(--borda); }
+.bloco--escuro .missa__texto { border-color: var(--borda-tinta); }
+.missa__fala { display: grid; grid-template-columns: 4.2rem 1fr; gap: var(--e3); font-family: var(--serif); font-size: 1.16rem; line-height: 1.45; }
+.missa__fala--povo { font-weight: 600; color: var(--lit); }
+.bloco--escuro .missa__fala--povo { color: var(--lit-claro); }
+.missa__quem { font-family: var(--sans); font-size: var(--t-rotulo); text-transform: uppercase; letter-spacing: 0.12em; color: var(--texto-3); font-weight: 600; padding-top: 0.3rem; }
+.bloco--escuro .missa__quem { color: var(--sobre-tinta-3); }
+.missa__nota { font-size: 0.92rem; padding-left: calc(4.2rem + var(--e3)); }
+@media (max-width: 560px) { .missa__fala { grid-template-columns: 1fr; gap: 0; } .missa__nota { padding-left: 0; } }
+
+/* ── colinha e árvore ── */
+.embutido { width: 100%; border: 0; min-height: 80vh; background: var(--papel); }
+.embutido--tela { height: 100vh; min-height: 0; }
+.cabeca--curta { padding-bottom: var(--e6); }
+@media (max-width: 900px) { .embutido--tela { height: calc(100vh - var(--abas) - env(safe-area-inset-bottom)); } }
