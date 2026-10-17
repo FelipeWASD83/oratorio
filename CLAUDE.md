@@ -116,7 +116,10 @@ Conferido em 1440×900, 3440×1440 (o miolo cresce a 136rem), 1080×1920 e 375×
 
 - **Quadro com `100vh` dentro de iframe cresce sem fim**: a colinha tem capa de `100vh` e, com o
   quadro medindo a altura do conteúdo, a capa media 25 mil px. Os dois embutidos têm a altura da
-  janela e rolam por dentro.
+  janela e rolam por dentro. **Uma barra de rolagem só (2.0.1):** vista com `tela: true` põe
+  `palco--tela` no `.palco` (altura da janela, sem rolar); o quadro toma o resto e só ele rola. A
+  colinha tem uma faixa fina no lugar do cabeçalho; a árvore não tem nada em volta. Cabeçalho grande
+  e rodapé em cima de um iframe de página inteira voltam a dar duas barras: não pôr.
 - `e.target.closest` estoura quando o evento vem do `document` (não é Element): o atalho do terço
   confere `instanceof Element`.
 - `Config(cadeado=Path(""))` vira `Path(".")` e procura `trava.py` na pasta atual: "sem cadeado" é

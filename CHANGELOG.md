@@ -2,6 +2,11 @@
 
 A versão mais nova fica em cima. Ela mora aqui, no `versao.json` e no `package.json`.
 
+## 2.0.1 (17/10/2026)
+
+### Corrigido
+- **Colinha de pecados e Árvore da Bíblia com uma barra de rolagem só.** Elas apareciam dentro de uma página do Oratório que também rolava, e ficavam duas barras brigando. Agora a janela fica parada e só a colinha (ou a árvore) rola, ocupando o resto da tela. Na colinha, o cabeçalho grande virou uma faixa fina com o aviso do cadeado e o botão "Como se confessar".
+
 ## 2.0.0 (17/10/2026)
 
 Recarregue a nova aba do Brave (1.5.0) em `brave://extensions` e abra o Oratório de novo pelo atalho do Menu Iniciar.

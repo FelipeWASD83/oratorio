@@ -58,7 +58,8 @@ async function render(opcoes = {}) {
   if (resultado.depois) resultado.depois();
 }
 
-function montar({ secoes, semRodape }) {
+function montar({ secoes, semRodape, tela }) {
+  document.querySelector('.palco').classList.toggle('palco--tela', !!tela);
   const vista = $('#vista');
   secoes.forEach((s, i) => {
     s.classList.add('bloco', i % 2 === 0 ? 'bloco--escuro' : 'bloco--claro');

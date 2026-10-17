@@ -173,8 +173,17 @@ mark { background: color-mix(in srgb, var(--lit) 22%, transparent); color: inher
 .missa__nota { font-size: 0.92rem; padding-left: calc(4.2rem + var(--e3)); }
 @media (max-width: 560px) { .missa__fala { grid-template-columns: 1fr; gap: 0; } .missa__nota { padding-left: 0; } }
 
-/* ── colinha e árvore ── */
-.embutido { width: 100%; border: 0; min-height: 80vh; background: var(--papel); }
-.embutido--tela { height: 100vh; min-height: 0; }
-.cabeca--curta { padding-bottom: var(--e6); }
-@media (max-width: 900px) { .embutido--tela { height: calc(100vh - var(--abas) - env(safe-area-inset-bottom)); } }
+/* ── colinha e árvore ──
+   Páginas inteiras que rolam sozinhas por dentro. Para não ter duas barras de rolagem (a do Oratório e a do quadro),
+   a vista toma a altura da janela, o Oratório não rola e só o quadro rola. */
+.palco--tela { height: 100vh; overflow: hidden; }
+.palco--tela #vista { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.palco--tela .bloco--cheio { flex: 1 1 auto; min-height: 0; }
+.embutido { width: 100%; border: 0; background: var(--papel); }
+.embutido--tela { height: 100%; }
+.faixa-embutido { padding: var(--e3) 0; flex: none; }
+.faixa-embutido .miolo { display: flex; align-items: center; gap: var(--e4); flex-wrap: wrap; }
+.faixa-embutido h1 { font-size: 1.25rem; margin: 0; }
+.faixa-embutido__nota { margin: 0; flex: 1 1 18rem; font-size: 0.9rem; color: var(--sobre-tinta-2, inherit); }
+.faixa-embutido .botao { padding-block: 0.35rem; }
+@media (max-width: 900px) { .palco--tela { height: calc(100vh - var(--abas) - env(safe-area-inset-bottom)); padding-bottom: 0; } }
